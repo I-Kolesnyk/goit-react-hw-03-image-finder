@@ -14,8 +14,8 @@ class App extends Component {
     query: '',
     images: [],
     page: 1,
+    status: 'idle',
     error: null,
-    isLoading: false,
     showModal: false,
     largeImageURL: null,
   };
@@ -39,7 +39,7 @@ class App extends Component {
 
   handleSearch = values => {
     if (!values.value.trim()) {
-      this.setState({ error: 'Please enter your search query!' });
+      this.setState({ error: 'Please enter your search query!', images: [] });
       return;
     }
 
@@ -58,21 +58,19 @@ class App extends Component {
     const { query, page } = this.state;
     const perPage = 12;
 
-    this.setState({ isLoading: true });
+    this.setState({ status: 'pending' });
 
     fetchImages(query, page, perPage)
       .then(({ hits, totalHits }) => {
         const totalPages = Math.ceil(totalHits / perPage);
 
         if (hits.length === 0) {
-          return toast.error('Sorry, no images found. Please, try again!');
-        }
-
-        if (page === 1) {
+          toast.error('Sorry, no images found. Please, try again!');
+          // this.setState({ query: '', status: 'idle', images: [] });
+          // return;
+        } else if (hits.length !== 0 && page === 1) {
           toast.success(`Hooray! We found ${totalHits} images.`);
-        }
-
-        if (page === totalPages) {
+        } else if (page === totalPages) {
           toast.info("You've reached the end of search results.");
         }
 
@@ -86,17 +84,17 @@ class App extends Component {
         });
         this.setState(({ images }) => ({
           images: [...images, ...data],
+          status: 'resolved',
           total: totalHits,
         }));
       })
-      .catch(error => this.setState({ error }))
-      .finally(() => this.setState({ isLoading: false }));
+      .catch(error => this.setState({ error, status: 'reject' }));
   };
 
   onLoadMore = () => {
     this.setState(({ page }) => ({
       page: page + 1,
-      isLoading: true,
+      status: 'pending',
     }));
   };
 
@@ -108,19 +106,26 @@ class App extends Component {
   };
 
   render() {
-    const { images, isLoading, showModal, largeImageURL, tags, total } =
+    const { images, isLoading, showModal, largeImageURL, tags, total, status } =
       this.state;
     const totalImages = this.state.images.length;
     const loadImages = totalImages !== 0;
     const isLastPage = images.length === total;
     const loadMoreBtn = loadImages && !isLoading && !isLastPage;
 
+    // if (status === 'pending') {
+    //   return <Loader />;
+    // }
+
+    // if (status === 'resolved') {
+    //   return <ImageGallery images={images} onClick={this.toggleModal} />;
+    // }
     return (
       <div>
         <Searchbar onSubmit={this.handleSearch} />
 
-        {this.state.isLoading && <Loader />}
-        {totalImages !== 0 && (
+        {status === 'pending' && <Loader />}
+        {status === 'resolved' && loadImages && (
           <ImageGallery images={images} onClick={this.toggleModal} />
         )}
 
