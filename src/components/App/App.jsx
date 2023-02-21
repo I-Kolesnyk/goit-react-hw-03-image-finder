@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Loader from 'components/Loader';
-import Button from 'components/Button';
+import ButtonLoadMore from 'components/Button';
 
 import { fetchImages } from 'service/fetchImages';
 
@@ -124,7 +124,7 @@ class App extends Component {
         )}
 
         {status === 'resolved' && page < pages && (
-          <Button onClick={this.onLoadMore}>Load more</Button>
+          <ButtonLoadMore onClick={this.onLoadMore} />
         )}
 
         <ToastContainer
