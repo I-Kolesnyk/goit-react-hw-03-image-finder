@@ -1,10 +1,12 @@
 import { TailSpin } from 'react-loader-spinner';
 
+import { StyledLoader } from './Loader.styled';
+
 const Loader = () => {
   return (
-    <div>
+    <StyledLoader>
       <TailSpin />
-    </div>
+    </StyledLoader>
   );
 };
 

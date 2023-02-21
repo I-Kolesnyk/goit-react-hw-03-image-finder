@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 
-const Button = ({ children, onClick }) => (
+const Button = ({ onClick }) => (
   <button type="button" onClick={onClick}>
-    {children}
+    Load More
   </button>
 );
 
 Button.propTypes = {
-  children: PropTypes.node,
-  onClick: PropTypes.func,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default Button;

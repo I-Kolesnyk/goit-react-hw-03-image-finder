@@ -12,21 +12,25 @@ function Searchbar({ onSubmit }) {
 
   return (
     <Formik initialValues={initialValue} onSubmit={handleSubmit}>
-      <header>
-        <Form>
-          <button type="submit">
-            <span>Search</span>
-          </button>
+      {({ isSubmitting }) => {
+        return (
+          <header>
+            <Form>
+              <button type="submit" disabled={isSubmitting}>
+                <span>Search</span>
+              </button>
 
-          <Field
-            name="value"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-        </Form>
-      </header>
+              <Field
+                name="value"
+                type="text"
+                autoComplete="off"
+                autoFocus
+                placeholder="Search images and photos"
+              />
+            </Form>
+          </header>
+        );
+      }}
     </Formik>
   );
 }
