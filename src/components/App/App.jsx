@@ -62,7 +62,6 @@ class App extends Component {
     if (!value.trim()) {
       this.setState({
         error: { type: 'info', message: 'Please enter your search query!' },
-        status: 'idle',
       });
       return;
     }
@@ -108,7 +107,6 @@ class App extends Component {
             message:
               'Sorry, there are no images matching your search query. Please try again.',
           },
-          status: 'idle',
         });
       }
       if (hits.length !== 0 && page === 1) {
