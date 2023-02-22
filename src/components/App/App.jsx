@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Loader from 'components/Loader';
 import ButtonLoadMore from 'components/Button';
+import { ToastWrapper } from 'components/ToastContainer/ToastContainer';
 
 import { fetchImages } from 'service/fetchImages';
+import { StyledApp } from './App.styled';
 
 class App extends Component {
   state = {
@@ -16,7 +18,7 @@ class App extends Component {
     page: 1,
     pages: 0,
     status: 'idle',
-    error: null,
+    error: { type: '', message: '' }, // type: error, info, success
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -27,17 +29,35 @@ class App extends Component {
       this.addImages();
     }
     if (prevState.error !== this.state.error && this.state.error) {
-      toast.error(this.state.error);
-      this.setState({
-        error: null,
-      });
+      this.handleError();
     }
   }
+
+  handleError = () => {
+    if (this.state.error.type === 'info') {
+      toast.info(this.state.error.message);
+      this.setState({
+        error: { type: '', message: '' },
+      });
+    }
+    if (this.state.error.type === 'error') {
+      toast.error(this.state.error.message);
+      this.setState({
+        error: { type: '', message: '' },
+      });
+    }
+    if (this.state.error.type === 'success') {
+      toast.success(this.state.error.message);
+      this.setState({
+        error: { type: '', message: '' },
+      });
+    }
+  };
 
   handleSearch = values => {
     if (!values.value.trim()) {
       this.setState({
-        error: 'Please enter your search query!',
+        error: { type: 'info', message: 'Please enter your search query!' },
         status: 'idle',
       });
       return;
@@ -45,8 +65,11 @@ class App extends Component {
 
     if (values.value === this.state.query) {
       this.setState({
-        error:
-          'You are seeing the images by this query. Please, change your query.',
+        error: {
+          type: 'info',
+          message:
+            'You are seeing the images by this query. Please, change your query.',
+        },
       });
       return;
     }
@@ -55,7 +78,10 @@ class App extends Component {
       query: values.value,
       images: [],
       page: 1,
-      error: null,
+      error: {
+        type: '',
+        message: '',
+      },
       status: 'idle',
     });
   };
@@ -72,16 +98,30 @@ class App extends Component {
       const totalPages = Math.ceil(totalHits / perPage);
 
       if (hits.length === 0) {
-        this.setState({ status: 'idle' });
-        return toast.error('Sorry, no images found. Please, try again!');
-        // this.setState({ query: '', status: 'idle', images: [] });
-        // return;
+        this.setState({
+          error: {
+            type: 'error',
+            message:
+              'Sorry, there are no images matching your search query. Please try again.',
+          },
+          status: 'idle',
+        });
       }
       if (hits.length !== 0 && page === 1) {
-        toast.success(`Hooray! We found ${totalHits} images.`);
+        this.setState({
+          error: {
+            type: 'success',
+            message: `Hooray! We found ${totalHits} images.`,
+          },
+        });
       }
       if (page === totalPages && page !== 1) {
-        toast.info("You've reached the end of search results.");
+        this.setState({
+          error: {
+            type: 'info',
+            message: "You've reached the end of search results.",
+          },
+        });
       }
 
       const data = hits.map(({ id, webformatURL, largeImageURL, tags }) => {
@@ -99,7 +139,13 @@ class App extends Component {
         pages: Math.ceil([totalHits] / 12),
       }));
     } catch (error) {
-      this.setState({ error, status: 'reject' });
+      this.setState({
+        error: {
+          type: 'error',
+          message: 'There are some problems! Try again later.',
+        },
+        status: 'reject',
+      });
     }
   };
 
@@ -114,32 +160,21 @@ class App extends Component {
     const { images, status, page, pages } = this.state;
 
     return (
-      <div>
+      <StyledApp>
         <Searchbar onSubmit={this.handleSearch} />
 
         {status === 'pending' && <Loader />}
-        {(status === 'resolved' ||
-          (status === 'pending' && this.state.page !== 1)) && (
+
+        {(status === 'resolved' || (status === 'pending' && page !== 1)) && (
           <ImageGallery images={images} />
         )}
 
-        {status === 'resolved' && page < pages && (
+        {(page < pages || (status === 'pending' && page > 1)) && (
           <ButtonLoadMore onClick={this.onLoadMore} />
         )}
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
-      </div>
+        <ToastWrapper />
+      </StyledApp>
     );
   }
 }

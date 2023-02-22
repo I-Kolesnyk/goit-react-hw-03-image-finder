@@ -5,7 +5,7 @@ import { StyledLoader } from './Loader.styled';
 const Loader = () => {
   return (
     <StyledLoader>
-      <TailSpin />
+      <TailSpin color="#0e7545" />
     </StyledLoader>
   );
 };

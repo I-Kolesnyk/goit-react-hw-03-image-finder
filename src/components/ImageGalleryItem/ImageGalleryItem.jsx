@@ -18,8 +18,10 @@ class ImageGalleryItem extends Component {
   render() {
     const { largeImageURL, showModal } = this.state;
     return (
-      <GalleryItem onClick={this.toggleModal}>
-        <GalleryImage src={this.props.webformatURL} alt={this.props.tags} />
+      <>
+        <GalleryItem onClick={this.toggleModal}>
+          <GalleryImage src={this.props.webformatURL} alt={this.props.tags} />
+        </GalleryItem>
         {showModal && (
           <Modal
             onClose={this.toggleModal}
@@ -27,7 +29,7 @@ class ImageGalleryItem extends Component {
             alt={this.props.tags}
           />
         )}
-      </GalleryItem>
+      </>
     );
   }
 }

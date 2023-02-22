@@ -1,6 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Formik, Form, Field } from 'formik';
+import { Formik } from 'formik';
+import { BiSearchAlt } from 'react-icons/bi';
+import {
+  SearchButton,
+  StyledForm,
+  Input,
+  StyledSearchbar,
+} from './Searchbar.styled';
 
 function Searchbar({ onSubmit }) {
   const initialValue = { value: '' };
@@ -14,21 +21,21 @@ function Searchbar({ onSubmit }) {
     <Formik initialValues={initialValue} onSubmit={handleSubmit}>
       {({ isSubmitting }) => {
         return (
-          <header>
-            <Form>
-              <button type="submit" disabled={isSubmitting}>
-                <span>Search</span>
-              </button>
+          <StyledSearchbar>
+            <StyledForm>
+              <SearchButton type="submit" disabled={isSubmitting}>
+                <BiSearchAlt size={'70%'} color={'#0e7545'} />
+              </SearchButton>
 
-              <Field
+              <Input
                 name="value"
                 type="text"
                 autoComplete="off"
                 autoFocus
                 placeholder="Search images and photos"
               />
-            </Form>
-          </header>
+            </StyledForm>
+          </StyledSearchbar>
         );
       }}
     </Formik>
