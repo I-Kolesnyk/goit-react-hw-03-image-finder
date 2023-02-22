@@ -21,41 +21,45 @@ class App extends Component {
     error: { type: '', message: '' }, // type: error, info, success
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.query !== this.state.query ||
-      (prevState.page !== this.state.page && this.state.page !== 1)
-    ) {
-      this.addImages();
+  componentDidUpdate(_, prevState) {
+    const { query, page, error } = this.state;
+    const { addImages, handleError } = this;
+
+    if (prevState.query !== query || (prevState.page !== page && page !== 1)) {
+      addImages();
     }
-    if (prevState.error !== this.state.error && this.state.error) {
-      this.handleError();
+
+    if (prevState.error !== error && error) {
+      handleError();
     }
   }
 
   handleError = () => {
-    if (this.state.error.type === 'info') {
-      toast.info(this.state.error.message);
+    const errorType = this.state.error.type;
+    const notification = this.state.error.message;
+
+    if (errorType === 'info') {
+      toast.info(notification);
       this.setState({
         error: { type: '', message: '' },
       });
     }
-    if (this.state.error.type === 'error') {
-      toast.error(this.state.error.message);
+    if (errorType === 'error') {
+      toast.error(notification);
       this.setState({
         error: { type: '', message: '' },
       });
     }
-    if (this.state.error.type === 'success') {
-      toast.success(this.state.error.message);
+    if (errorType === 'success') {
+      toast.success(notification);
       this.setState({
         error: { type: '', message: '' },
       });
     }
   };
 
-  handleSearch = values => {
-    if (!values.value.trim()) {
+  handleSearch = ({ value }) => {
+    if (!value.trim()) {
       this.setState({
         error: { type: 'info', message: 'Please enter your search query!' },
         status: 'idle',
@@ -63,7 +67,7 @@ class App extends Component {
       return;
     }
 
-    if (values.value === this.state.query) {
+    if (value === this.state.query) {
       this.setState({
         error: {
           type: 'info',
@@ -75,7 +79,7 @@ class App extends Component {
     }
 
     this.setState({
-      query: values.value,
+      query: value,
       images: [],
       page: 1,
       error: {
@@ -119,7 +123,7 @@ class App extends Component {
         this.setState({
           error: {
             type: 'info',
-            message: "You've reached the end of search results.",
+            message: 'You have reached the end of search results.',
           },
         });
       }
@@ -136,7 +140,7 @@ class App extends Component {
       this.setState(({ images }) => ({
         images: [...images, ...data],
         status: 'resolved',
-        pages: Math.ceil([totalHits] / 12),
+        pages: totalPages,
       }));
     } catch (error) {
       this.setState({
@@ -150,18 +154,19 @@ class App extends Component {
   };
 
   onLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
+    this.setState(({ page }) => ({
+      page: page + 1,
       status: 'pending',
     }));
   };
 
   render() {
     const { images, status, page, pages } = this.state;
+    const { handleSearch, onLoadMore } = this;
 
     return (
       <StyledApp>
-        <Searchbar onSubmit={this.handleSearch} />
+        <Searchbar onSubmit={handleSearch} />
 
         {status === 'pending' && <Loader />}
 
@@ -170,7 +175,7 @@ class App extends Component {
         )}
 
         {(page < pages || (status === 'pending' && page > 1)) && (
-          <ButtonLoadMore onClick={this.onLoadMore} />
+          <ButtonLoadMore onClick={onLoadMore} />
         )}
 
         <ToastWrapper />

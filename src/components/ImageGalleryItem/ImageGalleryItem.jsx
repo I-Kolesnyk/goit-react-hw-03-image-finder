@@ -17,51 +17,28 @@ class ImageGalleryItem extends Component {
 
   render() {
     const { largeImageURL, showModal } = this.state;
+    const { webformatURL, tags } = this.props;
+    const { toggleModal } = this;
+
     return (
       <>
-        <GalleryItem onClick={this.toggleModal}>
-          <GalleryImage src={this.props.webformatURL} alt={this.props.tags} />
+        <GalleryItem onClick={toggleModal}>
+          <GalleryImage src={webformatURL} alt={tags} />
         </GalleryItem>
         {showModal && (
-          <Modal
-            onClose={this.toggleModal}
-            large={largeImageURL}
-            alt={this.props.tags}
-          />
+          <Modal onClose={toggleModal} large={largeImageURL} alt={tags} />
         )}
       </>
     );
   }
 }
-// function ImageGalleryItem({
-//   webformatURL,
-//   largeImageURL,
-//   tags,
-//   onClick,
-//   showModal,
-// }) {
-//   console.log(onClick);
-//   return (
-//     <GalleryItem
-//       onClick={() => {
-//         onClick(largeImageURL);
-//       }}
-//     >
-//       <GalleryImage src={webformatURL} alt={tags} />
-//       {onClick && (
-//         <Modal>
-//           <img src={largeImageURL} alt={tags} />
-//         </Modal>
-//       )}
-//     </GalleryItem>
-//   );
-// }
 
 ImageGalleryItem.propTypes = {
-  webformatURL: PropTypes.string.isRequired,
-  largeImageURL: PropTypes.string.isRequired,
-  tags: PropTypes.string.isRequired,
-  // onClick: PropTypes.func.isRequired,
+  image: PropTypes.shape({
+    webformatURL: PropTypes.string.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+  }),
 };
 
 export default ImageGalleryItem;
