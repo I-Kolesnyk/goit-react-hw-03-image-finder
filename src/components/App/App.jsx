@@ -117,7 +117,13 @@ class App extends Component {
           },
         });
       }
-      if (totalImages > 0 && totalImages === images.length && page !== 1) {
+
+      if (
+        totalImages > 0 &&
+        page !== 1 &&
+        totalImages <= this.state.images.length + 12
+      ) {
+        console.log(totalImages, this.state.images.length);
         this.setState({
           notification: {
             type: 'info',
