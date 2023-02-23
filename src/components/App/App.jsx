@@ -123,7 +123,6 @@ class App extends Component {
         page !== 1 &&
         totalImages <= this.state.images.length + 12
       ) {
-        console.log(totalImages, this.state.images.length);
         this.setState({
           notification: {
             type: 'info',
