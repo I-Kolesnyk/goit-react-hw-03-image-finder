@@ -13,7 +13,7 @@ function Searchbar({ onSubmit }) {
   const initialValue = { value: '' };
 
   function handleSubmit(values, { resetForm }) {
-    onSubmit(values);
+    onSubmit(values.value.trim());
     resetForm();
   }
 
